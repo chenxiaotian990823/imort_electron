@@ -23,10 +23,7 @@
           <template #header>
             <!-- 这里给表头单元格添加双击事件 -->
             <div
-              :class="[
-                'table-cell-header',
-                { context: contextColumnLabel == item.label },
-              ]"
+              class="table-cell-header"
               @dblclick="headerDblClickHandle(item, index, $event)"
               @contextmenu="headerContextmenuHandle(item, $event)"
             >

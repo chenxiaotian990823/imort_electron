@@ -14,27 +14,17 @@
     },
     {
       "menuId": 5,
-      "props": [
-        {
-          "label": "名字"
-        }
-      ],
+      "props": [],
       "data": []
     },
     {
       "menuId": 6,
       "props": [
         {
-          "label": "名字"
-        },
-        {
           "label": "性别"
         },
         {
           "label": "时间-pre"
-        },
-        {
-          "label": "时间"
         }
       ],
       "data": []
