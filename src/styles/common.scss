@@ -1,0 +1,95 @@
+// 首页
+.el-container.is-vertical{
+  background: red;
+  height: 100vh;
+  font-size: 1rem;
+  .el-header {
+    background: pink;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    height: 4rem;
+    .my-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      .my-header-title {
+
+      }
+      .my-header-menu {
+        display: flex;
+        align-items: center;
+        .my-header-menu-item {
+          
+        }
+        .my-header-menu-item:not(:first-child) {
+          margin-left: 2rem;
+        }
+      }
+    }
+  }
+  .el-container {
+    background: skyblue;
+    .el-aside {
+      background: yellow;
+      min-width: 1rem;
+      .my-tree {
+        .my-tree-operate {
+          display: flex;
+          align-items: center;
+          justify-content: flex-end;
+          height: 2rem;
+          padding: 0 0.5rem;
+          .el-icon {
+            font-size: 1.4rem;
+            cursor: pointer;
+          }
+          .el-icon:not(:first-child) {
+            margin-left: 0.5rem;
+          }
+        }
+        .el-tree {
+          padding-left: 0.5rem;
+        }
+        .el-tree-node__expand-icon {
+          display: none;
+        }
+        .custom-tree-node {
+          display: flex;
+          align-items: center;
+        }
+      }
+    }
+    .el-main {
+      .el-table {
+        .table-cell-header {
+
+        }
+        .table-cell-header.context {
+          background: #e7e6e6;
+        }
+      }
+    }
+  }
+  .el-footer {
+    height: 4rem;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    text-align: center;
+  }
+}
+
+// 组件
+.my-table {
+  background: gold;
+  height: 100%;
+  width: 100%;
+  .el-table-v2 {
+    height: 100%;
+    width: 100%;
+    .el-table-v2__table.el-table-v2__main {
+      width: 100%;
+    }
+  }
+}

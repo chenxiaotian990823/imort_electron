@@ -1,0 +1,4 @@
+// src/styles/rem.scss
+@function set-rem-unit($base-width: 10) {
+  @return calc(100vw / $base-width); // 将设计图宽度等分为 $base-width 份
+}

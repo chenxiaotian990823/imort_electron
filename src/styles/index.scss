@@ -1,0 +1,8 @@
+// src/styles/index.scss
+@use "./element-plus-override.scss"; // 重写 element-plus 的样式
+
+@use "./rem.scss"; // rem 配置
+
+@use "./common.scss";
+
+@use "./reset.css"; // 重置样式

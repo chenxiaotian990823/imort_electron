@@ -1,0 +1,43 @@
+{
+  "list": [
+    {
+      "menuId": 4,
+      "props": [
+        {
+          "label": "name"
+        },
+        {
+          "label": "sex"
+        }
+      ],
+      "data": []
+    },
+    {
+      "menuId": 5,
+      "props": [
+        {
+          "label": "名字"
+        }
+      ],
+      "data": []
+    },
+    {
+      "menuId": 6,
+      "props": [
+        {
+          "label": "名字"
+        },
+        {
+          "label": "性别"
+        },
+        {
+          "label": "时间-pre"
+        },
+        {
+          "label": "时间"
+        }
+      ],
+      "data": []
+    }
+  ]
+}
