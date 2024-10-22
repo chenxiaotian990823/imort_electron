@@ -1,33 +1,69 @@
 {
   "list": [
     {
-      "menuId": 4,
-      "props": [
-        {
-          "label": "name"
-        },
-        {
-          "label": "sex"
-        }
-      ],
-      "data": []
-    },
-    {
-      "menuId": 5,
-      "props": [],
-      "data": []
-    },
-    {
       "menuId": 6,
       "props": [
         {
-          "label": "性别"
+          "label": "序号后",
+          "propField": "序号后"
         },
         {
-          "label": "时间-pre"
+          "label": "测试",
+          "propField": "测试"
+        },
+        {
+          "label": "sadasdasd",
+          "propField": "sadasdasd"
+        }
+      ],
+      "data": [
+        {
+          "序号后": "test",
+          "测试": "aaa"
+        },
+        {
+          "序号后": "123123123123",
+          "测试": "aaa11213123"
+        }
+      ]
+    },
+    {
+      "menuId": 5,
+      "props": [
+        {
+          "label": "测试",
+          "propField": "测试"
         }
       ],
       "data": []
+    },
+    {
+      "menuId": 4,
+      "props": [
+        {
+          "label": "测试",
+          "propField": "测试"
+        }
+      ],
+      "data": [
+        {
+          "测试": "123123123"
+        }
+      ]
+    },
+    {
+      "menuId": 7,
+      "props": [
+        {
+          "label": "test",
+          "propField": "test"
+        }
+      ],
+      "data": [
+        {
+          "test": "123123123"
+        }
+      ]
     }
   ]
 }

@@ -62,8 +62,10 @@
     }
     .el-main {
       .el-table {
-        .table-cell-header {
-
+        .el-input {
+          .el-input__inner {
+            text-align: center;
+          }
         }
       }
     }

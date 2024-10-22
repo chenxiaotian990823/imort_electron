@@ -36,7 +36,6 @@ export default {
     let menuList = ref([])
     let optionsComponent = ref({
       zIndex: 3,
-      minWidth: 230,
       x: 500,
       y: 200,
     });

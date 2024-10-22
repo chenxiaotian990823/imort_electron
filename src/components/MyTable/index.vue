@@ -1,7 +1,5 @@
 <template>
   <div class="my-table">
-    <el-button type="primary" @click="addLastColumn">增加列</el-button>
-    <el-button type="primary" @click="addLastRow">增加行</el-button>
     <el-table
       :data="tableData"
       style="width: 100%"
@@ -16,7 +14,7 @@
         <el-table-column
           v-if="!editingColumn[index]"
           :type="item.type"
-          :props="item.label"
+          :prop="item.propField"
           :width="item.width"
           align="center"
         >
@@ -30,12 +28,40 @@
               {{ item.label }}
             </div>
           </template>
-          <!-- <template #default="{ row }">
-            <span>{{ row[item.label] }}</span>
-          </template> -->
+          <template #default="{ row, $index }">
+            <!-- 可编辑表格 -->
+            <div
+              v-if="
+                editingRow.rowIndex == $index && editingRow.columnIndex == index
+              "
+            >
+              <span v-if="item.type">{{ $index + 1 }}</span>
+              <span v-else>
+                <el-input
+                  ref="rowInputRef"
+                  v-model="row[item.propField]"
+                  :autofocus="true"
+                  @focus="rowFocus(row[item.propField], $index, index)"
+                  @blur="
+                    saveRowData(
+                      row[item.propField],
+                      item.propField,
+                      $index,
+                      index
+                    )
+                  "
+                />
+              </span>
+            </div>
+            <!-- 只读表格 -->
+            <div v-else>
+              <span v-if="item.type">{{ $index + 1 }}</span>
+              <span v-else>{{ row[item.propField] || "--" }}</span>
+            </div>
+          </template>
         </el-table-column>
         <!-- 可编辑表头 -->
-        <el-table-column v-else align="center" width="150">
+        <el-table-column v-else align="center">
           <template #header>
             <el-input
               ref="headerInputRef"
@@ -45,7 +71,19 @@
               @blur="saveColumnLabel(index)"
             />
           </template>
+          <template #default="{ row, $index }">
+            <span v-if="item.type">{{ $index + 1 }}</span>
+            <span v-else>{{ row[item.propField] }}</span>
+          </template>
         </el-table-column>
+      </template>
+      <template #empty>
+        <div
+          style="width: 100%; height: 100%"
+          @contextmenu="nodataContextHandle"
+        >
+          暂无数据
+        </div>
       </template>
     </el-table>
     <create-or-update-column
@@ -76,6 +114,7 @@ export default {
   setup() {
     let createOrUpdateColumnRef = ref(null);
     let headerInputRef = ref(null);
+    let rowInputRef = ref(null);
     let contextMenuRef = ref(null);
     let menuVisible = ref(false); // 右键菜单显示状态
     let tableProps = ref([]); // 列配置
@@ -83,7 +122,12 @@ export default {
     const editColumnRecover = ref(null); // 编辑前的列数据
     const editingColumn = ref({}); // 控制编辑状态的列
     const contextColumnLabel = ref(null); // 右键编辑状态的列索引
-    const editingRow = ref(null); // 控制编辑状态的行
+    const editRowRecover = ref({
+      rowIndex: 0,
+      columnIndex: 0,
+      value: "",
+    });
+    const editingRow = ref({}); // 控制编辑状态的行
     let headerCellStyle = ref({
       background: "#f5f7fa",
       color: "#000",
@@ -91,17 +135,12 @@ export default {
       fontSize: "0.8rem",
       height: "1rem",
     });
-
-    // 添加新列
-    const addLastColumn = () => {
-      createOrUpdateColumnRef.value.init(null);
-    };
-
     // 添加新行
     const addLastRow = () => {
       const props = tableProps.value.filter((item) => item.type !== "index");
       const row = props.reduce((acc, cur) => {
-        acc[cur.label] = "";
+        // 检查这里生成的 key 是否与表头字段一致
+        acc[cur.propField] = ""; // 初始化每个字段为空字符串
         return acc;
       }, {});
       tableData.value.push(row);
@@ -113,13 +152,16 @@ export default {
     };
 
     // 初始化表格
-    const init = async (id, needIndex = true) => {
+    const init = async (id, needIndex = false) => {
       const path = readFromLocalStorage("currentProjectPath");
       const data = await readJsonFilesFromFolder(path, "table");
       if (data.table && data.table.list) {
         const tableObj = data.table.list.find((item) => item.menuId === id);
         if (!tableObj) {
-          tableProps.value = [];
+          // tableProps.value = [{
+          //   label: "序号",
+          //   type: "index"
+          // }];
           tableData.value = [];
         } else {
           if (needIndex) {
@@ -155,14 +197,36 @@ export default {
       menuVisible.value = true;
       nextTick(() => {
         if (contextMenuRef.value) {
-          let menuList = [{ label: "删除", action: "column_delete" }];
+          let menuList = [
+            { label: "向右增加一列", action: "column_add_right" },
+            { label: "删除", action: "column_delete" },
+          ];
+          if (column.type) {
+            menuList = menuList.filter(
+              (item) => item.action !== "column_delete"
+            );
+          }
           contextMenuRef.value.openContextMenu(event, menuList);
         }
       });
     };
     // 当某一行被双击时会触发该事件
     const rowDbClickHandle = (row, column, event) => {
-      console.log("rowDbClickHandle", row, column, event);
+      const index = tableData.value.findIndex((data) => data === row);
+      const columnIndex = column.getColumnIndex();
+      if (
+        editingRow.value.rowIndex == index &&
+        editingRow.value.columnIndex == columnIndex
+      ) {
+        return;
+      }
+      editingRow.value = {
+        rowIndex: index,
+        columnIndex: columnIndex,
+      };
+      nextTick(() => {
+        rowInputRef.value[0].focus();
+      });
     };
     // 列单元格聚焦
     const columnFocus = (item, index) => {
@@ -170,6 +234,27 @@ export default {
         index,
         label: item.label,
       };
+    };
+    // 行单元格聚焦
+    const rowFocus = (rowValue, rowIndex, columnIndex) => {
+      editRowRecover.value = {
+        rowIndex,
+        columnIndex,
+        value: rowValue,
+      };
+    };
+    // 保存行数据
+    const saveRowData = async (value, propField, rowIndex, columnIndex) => {
+      try {
+        editingRow.value = {};
+        await saveAllData();
+      } catch (error) {
+        ElMessage.error(`操作失败, ${error}`);
+        if (editRowRecover.value) {
+          tableData.value[editRowRecover.value.rowIndex][propField] =
+            editRowRecover.value.value;
+        }
+      }
     };
     const saveAllData = async () => {
       const path = readFromLocalStorage("currentProjectPath");
@@ -186,6 +271,11 @@ export default {
         let props = tableProps.value.filter((item) => {
           return !item.type;
         });
+        props.forEach((item) => {
+          if (!item.propField) {
+            item.propField = item.label;
+          }
+        });
         let newItem = {
           menuId: currentTableId,
           props,
@@ -198,13 +288,15 @@ export default {
           newItem,
           "menuId"
         );
-        ElMessage.success("操作成功");
       }
     };
     // 保存表头新名称
     const saveColumnLabel = async (index) => {
       try {
         editingColumn.value = { [index]: false };
+        if (!tableProps.value[editColumnRecover.value.index].label) {
+          throw new Error("列名不能为空");
+        }
         await saveAllData();
       } catch (error) {
         ElMessage.error(`操作失败, ${error}`);
@@ -216,23 +308,57 @@ export default {
     };
     const handleMenuClick = (action) => {
       console.log("handleMenuClick", action);
-      if(action === "column_delete") {
+      if (action === "column_add_init") {
+        tableProps.value.push({
+          label: "",
+        });
+        editingColumn.value = { [tableProps.value.length - 1]: true };
+      }
+      if (action === "column_add_right") {
+        const preIndex = tableProps.value.findIndex((item) => {
+          return item.label == contextColumnLabel.value;
+        });
+        tableProps.value.splice(preIndex + 1, 0, {
+          label: "",
+        });
+        editingColumn.value = { [preIndex + 1]: true };
+      } else if (action === "column_delete") {
         tableProps.value = tableProps.value.filter((item, index) => {
           return item.label !== contextColumnLabel.value;
         });
         saveAllData();
+      } else if (action === "row_add_init") {
+        addLastRow();
       }
       menuVisible.value = false;
+    };
+    // 暂无数据的时候右键菜单
+    const nodataContextHandle = (event) => {
+      console.log("nodataContextHandle", event);
+      menuVisible.value = true;
+      nextTick(() => {
+        if (contextMenuRef.value) {
+          let menuList = [{ label: "增加一列", action: "column_add_init" }];
+          console.log("tableProps.value.length", tableProps.value.length);
+          if (tableProps.value.length) {
+            menuList.push({
+              label: "增加一行",
+              action: "row_add_init",
+            });
+          }
+          contextMenuRef.value.openContextMenu(event, menuList);
+        }
+      });
     };
     return {
       createOrUpdateColumnRef,
       headerInputRef,
+      rowInputRef,
       contextMenuRef,
       menuVisible,
       tableProps,
       tableData,
       headerCellStyle,
-      addLastColumn,
       addLastRow,
       updateTableData,
       init,
@@ -247,6 +373,9 @@ export default {
       rowDbClickHandle,
       headerDblClickHandle,
       handleMenuClick,
+      saveRowData,
+      rowFocus,
+      nodataContextHandle,
     };
   },
 };

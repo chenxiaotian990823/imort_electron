@@ -61,6 +61,7 @@ export default {
       id: null,
       label: "",
       preField: "",
+      propField: ""
     });
     let rules = ref({
       label: [{ required: true, validator: validateLabel, trigger: "blur" }],
@@ -89,6 +90,7 @@ export default {
           const newData = addPropToMenuItem(
             data.table,
             currentTableId,
+            ruleForm.value.label,
             ruleForm.value.label,
             ruleForm.value.preField
           );
@@ -124,7 +126,7 @@ export default {
           filedList = tableObj.props.map((item) => {
             return {
               label: item.label,
-              value: item.label,
+              value: item.propField,
             };
           });
         }

@@ -329,10 +329,11 @@ export const deleteItemFromJson = (
  * @param {Object} jsonData 原始 JSON 数据
  * @param {number} menuId 目标项目的 menuId
  * @param {string} label 新的 prop 的 label
+ * @param {string} propField 新的 prop 的 propField
  * @param {string} prefix 新的 prop 的 prefix
  * @returns {Object} 返回更新后的数据结构
  */
-export const addPropToMenuItem = (jsonData, menuId, label, prefix) => {
+export const addPropToMenuItem = (jsonData, menuId, label, propField, prefix) => {
   // 查找指定 menuId 的项目
   let menuItem = jsonData.list.find(item => item.menuId == menuId);
 
@@ -343,7 +344,7 @@ export const addPropToMenuItem = (jsonData, menuId, label, prefix) => {
   }
 
   // 创建新的 prop 对象
-  const newProp = { label };
+  const newProp = { label, propField };
 
   // 根据 prefix 字段决定插入位置
   if (prefix === "index") {
