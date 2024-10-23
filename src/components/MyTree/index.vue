@@ -43,7 +43,7 @@ import ContextMenu from "@/components/MyTree/ContextMenu/index.vue";
 import CreateOrUpdateNode from "@/components/MyTree/CreateOrUpdateNode/index.vue";
 import { FolderAdd, FolderOpened, Document } from "@element-plus/icons-vue";
 import { buildTree, readFromLocalStorage } from "@/utils/index";
-import { readJsonFilesFromFolder, deleteItemFromJson } from "@/utils/fsOperate";
+import { readJsonFilesFromFolder, deleteItemFromJson, copyMenu } from "@/utils/fsOperate";
 import { CustomError } from "@/utils/fsOperate";
 
 export default {
@@ -93,7 +93,7 @@ export default {
       });
     };
     // 菜单点击事件
-    const handleMenuClick = (action) => {
+    const handleMenuClick = async (action) => {
       // 根据操作执行相应逻辑
       if (action === "copy") {
         copiedNode.value = JSON.parse(JSON.stringify(currentNodeData.value));
@@ -103,6 +103,16 @@ export default {
         createOrUpdateNodeRef.value.init(currentNodeData.value.id);
       } else if (action === "delete") {
         deleteConfirm();
+      } else if(action == "paste") {
+        try {
+          const path = readFromLocalStorage("currentProjectPath");
+          const copyId = copiedNode.value.id
+          const targetId = currentNodeData.value.id
+          await copyMenu(path, "menu", copyId, targetId)
+          updateMenuData()
+        } catch (error) {
+          ElMessage.error(`${error}, 请稍后重试`);
+        }
       }
       // 添加其他操作逻辑...
       menuVisible.value = false;
@@ -149,17 +159,12 @@ export default {
     };
     /**
      * 更新节点信息，增删改查造成的
-     * @param {*} id 节点id，用于想要主动展开某个节点
      */
-    const updateMenuData = async (id) => {
+    const updateMenuData = async () => {
       const path = readFromLocalStorage("currentProjectPath");
       const data = await readJsonFilesFromFolder(path, "menu");
       if (data.menu && data.menu.list) {
-        if (id) {
-          init(data.menu.list || [], [id]);
-        } else {
-          init(data.menu.list || []);
-        }
+        init(data.menu.list || []);
       }
     };
     const isHaveProject = computed(() => {
@@ -168,7 +173,7 @@ export default {
       };
     });
     // 初始化，扁平数组
-    const init = (list, expandedKeys = []) => {
+    const init = (list) => {
       treeData.value = buildTree(list || []);
     };
     return {

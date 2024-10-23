@@ -1,8 +1,25 @@
 // 首页
-.el-container.is-vertical{
+.el-container.is-vertical {
   background: red;
   height: 100vh;
   font-size: 1rem;
+  // 设置全局滚动条样式
+  ::-webkit-scrollbar {
+    width: 10px; // 滚动条的宽度
+  }
+
+  ::-webkit-scrollbar-track {
+    background: #f1f1f1; // 滚动条轨道的背景
+  }
+
+  ::-webkit-scrollbar-thumb {
+    background: rgba(187, 187, 187, 0.6); // 滚动条的颜色
+    border-radius: 10px; // 滚动条的圆角
+  }
+
+  ::-webkit-scrollbar-thumb:hover {
+    background: rgba(187, 187, 187, 1); // 滚动条的颜色
+  }
   .el-header {
     background: pink;
     display: flex;
@@ -14,13 +31,11 @@
       justify-content: space-between;
       align-items: center;
       .my-header-title {
-
       }
       .my-header-menu {
         display: flex;
         align-items: center;
         .my-header-menu-item {
-          
         }
         .my-header-menu-item:not(:first-child) {
           margin-left: 2rem;
@@ -30,6 +45,7 @@
   }
   .el-container {
     background: skyblue;
+    height: calc(100vh - 8rem);
     .el-aside {
       background: yellow;
       min-width: 1rem;
@@ -61,10 +77,34 @@
       }
     }
     .el-main {
-      .el-table {
-        .el-input {
-          .el-input__inner {
-            text-align: center;
+      background: skyblue;
+      height: 100%;
+      padding: 0.5rem;
+      overflow: hidden;
+      .table-container {
+        height: 100%;
+        background: #9fe2bf;
+        overflow: hidden;
+        .my-table {
+          height: 100%;
+          width: 100%;
+          overflow: hidden;
+          .el-table {
+            height: 100%;
+            .el-input {
+              .el-input__inner {
+                text-align: center;
+              }
+            }
+            .selected-row {
+              background: #9fe2bf;
+            }
+            .table-cell-content {
+              user-select: none;
+            }
+            tbody tr:hover > td {
+              background: transparent !important;
+            }
           }
         }
       }
@@ -76,19 +116,5 @@
     flex-direction: column;
     justify-content: center;
     text-align: center;
-  }
-}
-
-// 组件
-.my-table {
-  background: gold;
-  height: 100%;
-  width: 100%;
-  .el-table-v2 {
-    height: 100%;
-    width: 100%;
-    .el-table-v2__table.el-table-v2__main {
-      width: 100%;
-    }
   }
 }

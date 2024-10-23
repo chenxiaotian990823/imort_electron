@@ -369,3 +369,58 @@ export const addPropToMenuItem = (jsonData, menuId, label, propField, prefix) =>
     data: menuItem.data // 保持原有的 data 数据不变
   };
 };
+
+/**
+ * 复制菜单
+ * @param {string} proPath - 项目的根路径
+ * @param {string} fileName - JSON 文件名
+ * @param {number} copyId - 要复制的节点的 ID
+ * @param {number} pasteToId - 要粘贴到的节点的 ID
+ */
+export const copyMenu = (proPath, fileName, copyId, pasteToId) => {
+  const filePath = path.join(proPath, `${fileName}.json`);
+  
+  // 读取 JSON 文件内容
+  const jsonData = readJsonFilesFromFolder(proPath, fileName);
+  if (!jsonData) {
+    throw new Error(`无法读取文件 ${filePath}`);
+  }
+
+  const list = jsonData.menu.list;
+  // 生成新的 ID
+  let newId = Math.max(...list.map(item => item.id)) + 1;
+  
+  // 递归复制节点
+  function deepCopy(node, parentId) {
+    // 复制节点并生成新的 ID
+    const newNode = { ...node, id: newId++, parentId };
+
+    // 找到该节点的所有子节点
+    const children = list.filter(item => item.parentId === node.id);
+    
+    // 深度复制子节点并更新 parentId
+    const copiedChildren = [];
+    for (const child of children) {
+      copiedChildren.push(...deepCopy(child, newNode.id));
+    }
+
+    // 返回新节点和其所有子节点
+    return [newNode, ...copiedChildren];
+  }
+  
+  // 查找要复制的根节点（copyId 对应的节点）
+  const copyNode = list.find(item => item.id === copyId);
+  
+  if (!copyNode) {
+    throw new Error(`找不到要复制的节点，id: ${copyId}`);
+  }
+
+  // 递归复制并获取新节点
+  const newNodes = deepCopy(copyNode, pasteToId);
+
+  // 更新列表数据
+  const updatedList = [...list, ...newNodes];
+
+  // 将更新后的数据写入文件
+  fs.writeFileSync(filePath, JSON.stringify({ list: updatedList }, null, 2), 'utf8');
+}

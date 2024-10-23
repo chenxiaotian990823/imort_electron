@@ -10,7 +10,7 @@
         </el-aside>
         <el-container>
           <el-main>
-            <div v-show="isHaveTableId">
+            <div class="table-container" v-show="isHaveTableId">
               <my-table ref="myTable" />
               <!-- <el-backtop :right="100" :bottom="100" /> -->
             </div>
@@ -27,7 +27,7 @@ import { ref, onMounted, nextTick, computed } from "vue";
 import MyTable from "@/components/MyTable/index.vue";
 import MyTree from "@/components/MyTree/index.vue";
 import MyHeader from "@/components/MyHeader/index.vue";
-import { readFromLocalStorage, writeToLocalStorage } from "@/utils"
+import { readFromLocalStorage, writeToLocalStorage, removeFromLocalStorage } from "@/utils"
 export default {
   components: {
     MyTree,
@@ -46,6 +46,8 @@ export default {
           list = menu.list;
         }
         myTree.value.init(list);
+        currentTableId.value = null;
+        removeFromLocalStorage("currentTableId")
       });
     };
     // 菜单末节点点击处理表格
