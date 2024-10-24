@@ -369,15 +369,15 @@ export default {
             { label: "向上插入当前行", action: "up_paste_row" },
             { label: "向下插入当前行", action: "down_paste_row" },
           ];
+          menuList.push({ label: "删除当前行", action: "delete_row" });
           if (selectedRows.value.size > 0) {
             let arr = [
               { label: "向上插入选中行", action: "batch_up_paste_row" },
               { label: "向下插入选中行", action: "batch_down_paste_row" },
               { label: "删除选中行", action: "delete_sel_row" },
             ];
-            menuList.push(...arr);
+            menuList = arr;
           }
-          menuList.push({ label: "删除当前行", action: "delete_row" });
           contextMenuRef.value.openContextMenu(event, menuList);
         }
       });
