@@ -1,3 +1,9 @@
+.el-message {
+  font-size: 0.8rem !important; /* 自定义字体大小 */
+}
+.el-message__content {
+  font-size: 0.8rem !important;  /* 自定义文字大小 */
+}
 // 首页
 .el-container.is-vertical {
   background: red;

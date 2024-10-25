@@ -48,7 +48,7 @@
                   ref="rowInputRef"
                   v-model="row[item.propField]"
                   :autofocus="true"
-                  @focus="rowFocus(row[item.propField], $index, index)"
+                  @focus="rowFocus(row[item.propField], $index, item.propField)"
                   @blur="
                     saveRowData(
                       row[item.propField],
@@ -137,7 +137,7 @@ export default {
     const editRowRecover = ref({
       // 编辑前的行数据
       rowIndex: 0,
-      columnIndex: 0,
+      propField: "",
       value: "",
     });
     const editingRow = ref({}); // 控制编辑状态的行
@@ -171,7 +171,7 @@ export default {
     const init = async (id, needIndex = false) => {
       editColumnRecover.value = null;
       editingColumn.value = {};
-      editRowRecover.value = { rowIndex: 0, columnIndex: 0, value: "" };
+      editRowRecover.value = { rowIndex: 0, propField: "", value: "" };
       contextColumnLabel.value = null;
       editingRow.value = {};
       selectedRows.value.clear();
@@ -239,10 +239,10 @@ export default {
       };
     };
     // 行单元格聚焦
-    const rowFocus = (rowValue, rowIndex, columnIndex) => {
+    const rowFocus = (rowValue, rowIndex, propField) => {
       editRowRecover.value = {
         rowIndex,
-        columnIndex,
+        propField,
         value: rowValue,
       };
     };
@@ -319,7 +319,6 @@ export default {
       nextTick(() => {
         if (contextMenuRef.value) {
           let menuList = [{ label: "增加一列", action: "column_add_init" }];
-          console.log("tableProps.value.length", tableProps.value.length);
           if (tableProps.value.length) {
             menuList.push({
               label: "增加一行",
@@ -516,13 +515,26 @@ export default {
     const handleEscKey = (event) => {
       const clearColumnEdit = () => {
         editingColumn.value = {};
+        if(editColumnRecover.value) {
+          tableProps.value[editColumnRecover.value.index].label =
+            editColumnRecover.value.label;
+        }
         tableProps.value = tableProps.value.filter((item) => {
           return item.label;
         });
       };
+      const clearRowEdit = () => {
+        if(editRowRecover.value) {
+          tableData.value[editRowRecover.value.rowIndex][editRowRecover.value.propField] =
+            editRowRecover.value.value;
+        }
+        editingRow.value = {};
+      }
       if (event.key === "Escape" || event.keyCode === 27) {
         // 当按下 Esc 键时，清空编辑状态
         clearColumnEdit();
+        clearRowEdit()
+        selectedRows.value.clear(); // 清除之前的选中行
       }
     };
     // 开始选择行
