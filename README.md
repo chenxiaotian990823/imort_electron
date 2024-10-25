@@ -25,7 +25,12 @@
 ├── src
     ├── assets    // 静态资源
     ├── components  // 组件
+        ├── MyHeader  // 头部组件
+        ├── MyTree  // 树组件
+        ├── MyTable  // 表格组件
     ├── pages      // 页面
+        ├── index  // 首页
+        ├── login  // 登录页
     ├── router    // 路由
     ├── utils     // 工具
     ├── styles    // 样式
