@@ -67,7 +67,7 @@
               @contextmenu="rowCellContextHandle(row, $index, $event)"
             >
               <span v-if="item.type">{{ $index + 1 }}</span>
-              <span v-else>{{ row[item.propField] || "--" }}</span>
+              <span v-else>{{ row[item.propField] || "" }}</span>
             </div>
           </template>
         </el-table-column>
@@ -552,8 +552,8 @@ export default {
         // 右键点击，不执行选择操作
         return;
       }
-      const arr = [...selectedRows.value];
-      console.log("endSelect", arr);
+      // const arr = [...selectedRows.value];
+      // console.log("endSelect", arr);
     };
 
     // 进行行选择

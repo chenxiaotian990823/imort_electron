@@ -79,6 +79,11 @@
         .custom-tree-node {
           display: flex;
           align-items: center;
+          width: 100%;
+        }
+        .custom-tree-node.active {
+          background: var(--el-color-primary);
+          color: #fff;
         }
       }
     }
@@ -105,7 +110,7 @@
             .selected-row {
               background: #9fe2bf;
             }
-            .table-cell-content {
+            .table-cell-header, .table-cell-content {
               user-select: none;
             }
             tbody tr:hover > td {

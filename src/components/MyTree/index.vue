@@ -18,7 +18,7 @@
       icon="el-icon-caret-right"
     >
       <template #default="{ data }">
-        <span class="custom-tree-node">
+        <span :class="['custom-tree-node', { active: data.id === currentTableId }]">
           <el-icon v-if="data.children && data.children.length"><FolderOpened /></el-icon>
           <el-icon v-else><Document /></el-icon>
           <span>{{ data.label }}</span>
@@ -65,11 +65,13 @@ export default {
     let menuVisible = ref(false);
     let currentNodeData = ref(null);
     let copiedNode = ref(null); // 保存复制的节点
+    let currentTableId = ref(readFromLocalStorage("currentTableId")); // 记录当前table
 
     // 鼠标左键点击
     const handleNodeClick = (data, node) => {
       if (!data.children || data.children.length === 0) {
         emit("menu:table:sel", data);
+        currentTableId.value = data.id
       }
     };
     // 右键点击
@@ -190,6 +192,7 @@ export default {
       handleAddRootNode,
       updateMenuData,
       isHaveProject,
+      currentTableId
     };
   },
 };
