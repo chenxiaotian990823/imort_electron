@@ -1,6 +1,33 @@
 <template>
   <div class="my-table">
+    <div class="scroller-header">
+      <div class="scroller-header-item" v-for="(v, i) in tableProps" :key="i">
+        {{ v.label }}
+      </div>
+    </div>
+    <RecycleScroller
+      class="scroller"
+      ref="tableRef"
+      :items="tableData"
+      :item-size="32"
+      key-field="id"
+      v-slot="{ item, index, active }"
+    >
+      <div class="scroller-body">
+        <div
+          class="scroller-row"
+          :data-index="index"
+          @click="rowClickHandle(item, index, $event)"
+          @dblclick="rowDbClickHandle(item, index, $event)"
+          @contextmenu="rowContextmenuHandle(item, index, $event)"
+          @mousedown="startSelect(item, index, $event)"
+        >
+          {{ item }}
+        </div>
+      </div>
+    </RecycleScroller>
     <el-table
+      v-if="false"
       ref="tableRef"
       :data="tableData"
       style="width: 100%"
@@ -67,7 +94,7 @@
               @contextmenu="rowCellContextHandle(row, $index, $event)"
             >
               <span v-if="item.type">{{ $index + 1 }}</span>
-              <span v-else>{{ row[item.propField] || "" }}</span>
+              <span v-else>{{ row[item.propField] || "\u200B" }}</span>
             </div>
           </template>
         </el-table-column>
@@ -190,7 +217,13 @@ export default {
             });
           }
           tableProps.value = tableObj.props;
-          tableData.value = tableObj.data;
+          tableData.value = tableObj.data.map((item, index) => {
+            return {
+              ...item,
+              id: index + 1,
+            }
+          });
+          console.log("tableData.value", tableData.value)
         }
       }
       nextTick(() => {

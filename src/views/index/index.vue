@@ -12,7 +12,7 @@
           <el-main>
             <div class="table-container" v-show="isHaveTableId">
               <my-table ref="myTable" />
-              <!-- <el-backtop :right="100" :bottom="100" /> -->
+              <el-backtop :right="100" :bottom="100" />
             </div>
           </el-main>
         </el-container>
